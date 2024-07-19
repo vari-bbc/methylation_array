@@ -1,0 +1,9 @@
+samplesheet_header_rows: 4
+
+sesame_params:
+  array_type: "MM285"
+  prep_method: "TQCDPB"
+
+
+modules:
+  R: bbc2/R/R-4.4.0
