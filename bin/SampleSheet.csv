@@ -1,1 +1,15 @@
-/varidata/research/projects/krawczyk/vari-core-generated-data/EPIC Array-Methylation/PR001163_KRAC_MouseMeth_kdm5c-cd11c steady state/SampleSheet.csv
+[Header],,,,,,
+Investigator Name,PI,,,,,
+Project Name,DNA_Methylation_Mouse,,,,,
+Experiment Name,GSE198222_mousemeth,,,,,
+Date,1/4/2024,,,,,
+,,,,,,
+[Manifests],,,,,,
+A1,MouseMethylation-12v1-0_A2.bpm,,,,,
+,,,,,,
+[Data],,,,,,
+Sample_Name,Sample_Well,Sample_Plate,Sample_Group,PI,Sentrix_ID,Sentrix_Position
+GSM5941071,A01,MSA4_1,,PI,205723950005,R04C02
+GSM5941072,B01,MSA4_1,,PI,205723950005,R05C02
+GSM5941068,C01,MSA4_1,,PI,205723950005,R01C02
+GSM5941069,D01,MSA4_1,,PI,205723950005,R02C02

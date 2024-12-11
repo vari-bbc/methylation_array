@@ -1,8 +1,8 @@
 samplesheet_header_rows: 10
 
 sesame_params:
-  array_type: "EPIC"
-  prep_method: "QCDPB"
+  array_type: "MM285"
+  prep_method: "TQCDPB"
 
 idat_dir:  "idat_files"  ## the dir where idat files are stored, it can be absolute or relative to the workflow dir. 
 
