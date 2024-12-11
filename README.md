@@ -10,15 +10,15 @@ git clone https://github.com/vari-bbc/methylation_array.git
 ```
 
 ## Configure the workflow
-  * Step 1. Move your idat files to directory "idat_files". Each of your sample should have two idat files, one for green channel and one for red channel.   
-  * Step 2. List the names of these idat files in bin/units.tsv. See the example comes with the repo, do not change the column name "idat". 
-  * Step 3. Copy the SampleSheet.csv, which you often receive from the sequencing facility, under bin/. If this sample sheet has a different name, change it to "SampleSheet.csv". Open SampleSheet.csv, and count how many rows were header rows. The sample information often starts below "Sample_Name", count how many rows were above "Sample_Name". You will need this information below. 
-  * Step 4. Fill the config.yaml file under bin/. samplesheet_header_rows is the number from step 3. array_type can be EPICv2/EPIC/HM450 for human, and MM285 for mouse. Recommonded prep_method for EPICv2/EPIC/HM450 and MM285 are QCDPB and TQCDPB respectively. For more information please refer to [SeSAMe vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/sesame/inst/doc/sesame.html) on bioconductor. modules can be left alone. 
-  * Step 5 Fill the meta.tsv file under bin/. This file provides important information to the workflow as it links the idat files to your samples. The 5th column, Sample_Name should have the same sample_names from SampleSheet.csv (1st column of SampleSheet.csv). Group column (1st column in meta.tsv) is important, this should be grouping information for you samples in differential methylation analysis. It can be the same as genotype, or diet, populations etc. Or it can be a combination of genotype and diet. For instance you have a 2 x 2 design experiment of two genotypes, WT and KO, and two diet levels, high fat diet (hfd) and standard chow diet (scd), you want to look at methylation difference between KO_hfd and KO_scd; for this case, you will put KO_hfd, KO_scd, WT_hfd and WT_scd as group informaiton. Other columns can be left empty or you can fill with the same value for all the samples.  
-  * Step 6. Lastly, fill comparisons.tsv; using example from step 5, you can put KO_hfd as group1 and KO_scd as group2. group2 will be your reference group, this means when we calculate differential methylation, it is group1-group2, postive value means methylation in group1 is higher than group2. You can list more than one comparison, using the above example, you can also look at KO_hfd and KO_scd. Make sure each compaprison is in one row.  
+
+This repo comes with example data that were part of [GEO GSE198222](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE1982229). To use for your own data, follow below steps:
+  * Step 1. Copy the SampleSheet.csv, which you often receive from the sequencing facility, under bin/. If this sample sheet has a different name, change it to "SampleSheet.csv". Open SampleSheet.csv, and count how many rows were header rows (how many rows were above "Sample_Name"). You will need this information below. 
+  * Step 2. Fill the config.yaml file under bin/. samplesheet_header_rows is the number from step 1. array_type can be EPICv2/EPIC/HM450 for human, and MM285 for mouse. Recommonded prep_method for EPICv2/EPIC/HM450 and MM285 are QCDPB and TQCDPB respectively. For more information please refer to [SeSAMe vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/sesame/inst/doc/sesame.html). Modules can be left alone. 
+  * Step 3 Fill the meta.tsv file under bin/. This file provides important information to the workflow as it links the idat files to your samples. The 5th column, Sample_Name should have the same Sample_Name from SampleSheet.csv (1st column of SampleSheet.csv). Group column (1st column in meta.tsv) is important, this should be grouping information in differential methylation analysis. It can be the same as genotype, or diet, populations etc. Or it can be a combination of genotype and diet. For instance you have a 2 x 2 design experiment of two genotypes, WT and KO, and two diet levels, high fat diet (hfd) and standard chow diet (scd), you want to look at methylation difference between KO_hfd and KO_scd; for this case, you can put KO_hfd, KO_scd, WT_hfd and WT_scd as group informaiton. Other columns can be left empty or you can fill with the same value for all the samples.  
+  * Step 4. Lastly, fill comparisons.tsv; using example from step 3, you can put KO_hfd as group1 and KO_scd as group2. group2 will be your reference group, this means when we calculate differential methylation, it is group1-group2, postive value means methylation in group1 is higher than group2. You can list more than one comparison, using the above example, you can also look at KO_hfd and KO_scd. Make sure each compaprison is in one row.  
 
 ## Run the workflow
-After you the setup you have done, you are ready to run the workflow. Make sure to go back to the main dir where Snakefile and README file are located. Then run:
+Make sure to go back to the main dir where Snakefile and README file are located. Then run:
 ```
 sbatch bin/run_snake.sh
 ```   
@@ -26,7 +26,7 @@ sbatch bin/run_snake.sh
 Or if you want to do a dry run and see what rules will be executed, you can do:
 ```
 module load bbc2/snakemake
-snakemake -npr
+snakemake -np
 ```
 
 
