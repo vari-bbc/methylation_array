@@ -7,7 +7,7 @@ min_version("6.0.0")
 
 configfile: "bin/config.yaml"
 
-units = pd.read_table("bin/units.tsv")
+#units = pd.read_table("bin/units.tsv")
 comps = pd.read_table("bin/comparisons.tsv")
 
 ##### target rules #####
@@ -20,13 +20,14 @@ rule all:
 
 rule sesame_qc:
     input:
-        expand("idat_files/{file}", file=units.idat) 
+        idat_dir=config['idat_dir']
+        #expand("idat_files/{file}", file=units.idat) 
     output:
         "analysis/sesame_qc/qc.rds"
     benchmark:
         "benchmarks/sesame_qc/bench.txt"
-    params:
-        idat_dir="idat_files/"
+    #params:
+     #   idat_dir=config['idat_dir']
     threads: 8
     resources:
         mem_gb=96,
@@ -38,7 +39,8 @@ rule sesame_qc:
 
 rule sesame_se:
     input:
-        idats = expand("idat_files/{file}", file=units.idat),
+        idat_dir=config['idat_dir'],
+        #idats = expand("idat_files/{file}", file=units.idat),
         samplesheet = "bin/SampleSheet.csv",
         meta = "bin/meta.tsv"
     output:
@@ -46,7 +48,7 @@ rule sesame_se:
     benchmark:
         "benchmarks/sesame_se/bench.txt"
     params:
-        idat_dir="idat_files/",
+       # idat_dir="idat_files/",
         manifest_id=config['sesame_params']['array_type'],
         sesame_prep=config['sesame_params']['prep_method'], # recommended by vignette for MM285
         samplesheet_skip=config['samplesheet_header_rows']

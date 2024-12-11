@@ -5,17 +5,38 @@ library(ggrepel)
 library(cowplot)
 library(tidyverse)
 
-betas <- openSesame(snakemake@params[['idat_dir']], prep=snakemake@params[['sesame_prep']]) # BPPARAM = BiocParallel::MulticoreParam(snakemake@threads))
+betas <- openSesame(snakemake@input[['idat_dir']], prep=snakemake@params[['sesame_prep']]) # BPPARAM = BiocParallel::MulticoreParam(snakemake@threads))
 
-samplesheet <- read_csv(snakemake@input[['samplesheet']], skip = snakemake@params[['samplesheet_skip']]) %>%
+samplesheet <- read_csv(snakemake@input[['samplesheet']], skip = snakemake@params[['samplesheet_skip']]) 
+# add checking for column names, make sure we have three essential columns
+if(!all(c("Sample_Name", "Sentrix_ID", "Sentrix_Position") %in% colnames(samplesheet)))
+stop("missing one or more of the essential columns: Sample_Name, Sentrix_ID, Sentrix_Position in Samplesheet")
+
+samplesheet <- samplesheet %>%
     dplyr::mutate(sample = paste0(Sentrix_ID, "_", Sentrix_Position))
 
-meta <- read_tsv(snakemake@input[['meta']]) %>%
-    dplyr::left_join(., samplesheet, by="Sample_Name") %>%
+meta <- read_tsv(snakemake@input[['meta']]) 
+if(!"Sample_Name" %in% colnames(samplesheet))
+stop("Error: missing column Sample_Name in the meta sheet")
+
+meta <- meta %>%
+    dplyr::left_join(samplesheet, by="Sample_Name") %>%
     tibble::column_to_rownames("sample")
 
-se <- SummarizedExperiment(assays=list(betas=betas),
-        colData = meta[colnames(betas), ])
+## create summarized experiment
+if(setequal(rownames(meta), colnames(betas))) {         
+  
+  se <- SummarizedExperiment(assays=list(betas=betas),
+                             colData = meta[colnames(betas), ])
+} else if(length(intersect(rownames(meta), colnames(betas))) >=1) {
+  
+  common_samples <- intersect(rownames(meta), colnames(betas))
+  se <- SummarizedExperiment(assays=list(betas=betas[, common_samples]),
+                             colData = meta[common_samples, ])
+  
+} else {
+  message("Can not create summerized experiment, check meta and sample sheet.")
+}
 
 # get probe locations from manifest
 rowdat <- sesameData_getManifestGRanges(snakemake@params[['manifest_id']])
