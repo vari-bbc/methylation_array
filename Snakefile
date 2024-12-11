@@ -8,7 +8,7 @@ min_version("6.0.0")
 configfile: "bin/config.yaml"
 
 #units = pd.read_table("bin/units.tsv")
-comps = pd.read_table("bin/comparisons.tsv")
+comps = pd.read_table("samples/comparisons.tsv")
 
 ##### target rules #####
 
@@ -41,8 +41,8 @@ rule sesame_se:
     input:
         idat_dir=config['idat_dir'],
         #idats = expand("idat_files/{file}", file=units.idat),
-        samplesheet = "bin/SampleSheet.csv",
-        meta = "bin/meta.tsv"
+        samplesheet = "samples/SampleSheet.csv",
+        meta = "samples/meta.tsv"
     output:
         "analysis/sesame_se/se.rds"
     benchmark:
