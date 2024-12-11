@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --export=NONE
-#SBATCH -J epic_workflow
-#SBATCH -o epic_workflow.o
-#SBATCH -e epic_workflow.e
+#SBATCH -J methylation_workflow
+#SBATCH -o methylation_workflow.o
+#SBATCH -e methylation_workflow.e
 #SBATCH --ntasks 1
 #SBATCH --time 24:00:00
 #SBATCH --mem=8G

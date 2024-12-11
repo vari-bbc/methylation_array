@@ -1,9 +1,10 @@
-samplesheet_header_rows: 4
+samplesheet_header_rows: 10
 
 sesame_params:
-  array_type: "MM285"
-  prep_method: "TQCDPB"
+  array_type: "EPIC"
+  prep_method: "QCDPB"
 
+idat_dir:  "idat_files"  ## the dir where idat files are stored, it can be absolute or relative to the workflow dir. 
 
 modules:
   R: bbc2/R/alt/R-4.4.0-setR_LIBS_USER
