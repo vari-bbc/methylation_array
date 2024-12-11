@@ -4,7 +4,7 @@ sesame_params:
   array_type: "EPIC"
   prep_method: "QCDPB"
 
-idat_dir:  "/home/daisy.fu/bbc-secondary/research/NEPK_2022_EPIC_910/raw_data"  ## the direcdtory where the idat files are stored, it can be absolute too 
+idat_dir:  "idat_files"  ## the dir where idat files are stored, it can be absolute or relative to the workflow dir. 
 
 modules:
   R: bbc2/R/alt/R-4.4.0-setR_LIBS_USER
