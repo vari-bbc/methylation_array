@@ -1,6 +1,6 @@
 # methylation_array
 
-methylation_array is a Snakemake workflow designed to handle Illumina methylation array data through mutliple steps: QC, creating SummarizedExperiment object, generating PCA plot, and cconduct differential methylation analysis. The workfow uses R bioconductor package [SeSAME](https://bioconductor.org/packages/release/bioc/html/sesame.html) as the central component. The workflow is optimized for use on the HPC system at Van Andel Insititute, but it can also be adapted for use on any Unix-based system with some adjustments to the environment setup.
+methylation_array is a Snakemake workflow designed to handle Illumina methylation array data through mutliple steps: QC, creating SummarizedExperiment object, generating PCA plot, and conduct differential methylation analysis. The workfow uses R bioconductor package [SeSAME](https://bioconductor.org/packages/release/bioc/html/sesame.html) as the central component. The workflow is optimized for use on the HPC system at Van Andel Insititute, but it can also be adapted for use on any Unix-based system with some adjustments to the environment setup.
 
 ## Installation
 
