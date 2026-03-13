@@ -25,6 +25,7 @@ echo "Start snakemake workflow." >&2
 snakemake \
 -p \
 --latency-wait 20 \
+--keep-incomplete \
 --use-envmodules \
 --jobs 100 \
 --cluster "mkdir -p logs/{rule}; sbatch \

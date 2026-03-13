@@ -26,12 +26,12 @@ meta <- meta %>%
 ## create summarized experiment
 if(setequal(rownames(meta), colnames(betas))) {         
   
-  se <- SummarizedExperiment(assays=list(betas=betas),
+  se <- SummarizedExperiment(assays = list(betas = betas),
                              colData = meta[colnames(betas), ])
-} else if(length(intersect(rownames(meta), colnames(betas))) >=1) {
+} else if(length(intersect(rownames(meta), colnames(betas))) >= 1) {
   
   common_samples <- intersect(rownames(meta), colnames(betas))
-  se <- SummarizedExperiment(assays=list(betas=betas[, common_samples]),
+  se <- SummarizedExperiment(assays = list(betas = betas[, common_samples]),
                              colData = meta[common_samples, ])
   
 } else {
