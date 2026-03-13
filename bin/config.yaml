@@ -4,6 +4,10 @@ sesame_params:
   array_type: "MM285"
   prep_method: "TQCDPB"
 
+analysis_params:
+  pval_threshold: 0.05
+  eff_threshold: 0.1
+
 idat_dir:  "idat_files"  ## the dir where idat files are stored, it can be absolute or relative to the workflow dir. 
 
 modules:

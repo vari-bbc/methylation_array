@@ -1,0 +1,9 @@
+benchmarks/
+logs/
+analysis/
+idat_files/
+samples/
+methylation_workflow.e
+methylation_workflow.o
+.Rproj.user
+*.pdf
