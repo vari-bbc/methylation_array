@@ -70,8 +70,10 @@ rule sesame_DM:
     benchmark:
         "benchmarks/sesame_DM/{group1}.v.{group2}.txt"
     params:
-        array_type=config['sesame_params']['array_type']
-    threads: 4
+        array_type=config['sesame_params']['array_type'],
+        pval_threshold=config['analysis_params']['pval_threshold'],
+        eff_threshold=config['analysis_params']['eff_threshold']
+    threads: 8
     resources:
         mem_gb=72,
         log_prefix=lambda wildcards: "_".join(wildcards)
