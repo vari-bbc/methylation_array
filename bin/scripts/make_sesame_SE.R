@@ -5,9 +5,13 @@ library(ggrepel)
 library(cowplot)
 library(tidyverse)
 
-betas <- openSesame(snakemake@input[['idat_dir']], prep=snakemake@params[['sesame_prep']]) # BPPARAM = BiocParallel::MulticoreParam(snakemake@threads))
+# =========== Import betas and metadata, create SummarizedExperiment =====
+betas <- openSesame(snakemake@input[['idat_dir']], 
+  prep=snakemake@params[['sesame_prep']]) # BPPARAM = BiocParallel::MulticoreParam(snakemake@threads))
 
-samplesheet <- read_csv(snakemake@input[['samplesheet']], skip = snakemake@params[['samplesheet_skip']]) 
+## Read in sample sheet:
+samplesheet <- read_csv(snakemake@input[['samplesheet']], 
+  skip = snakemake@params[['samplesheet_skip']]) 
 # add checking for column names, make sure we have three essential columns
 if(!all(c("Sample_Name", "Sentrix_ID", "Sentrix_Position") %in% colnames(samplesheet)))
 stop("missing one or more of the essential columns: Sample_Name, Sentrix_ID, Sentrix_Position in Samplesheet")
@@ -15,15 +19,28 @@ stop("missing one or more of the essential columns: Sample_Name, Sentrix_ID, Sen
 samplesheet <- samplesheet %>%
     dplyr::mutate(sample = paste0(Sentrix_ID, "_", Sentrix_Position))
 
+## check for duplicated samples in sample sheet:
+if (anyDuplicated(samplesheet$sample)) {
+  dup <- unique(samplesheet$sample[duplicated(samplesheet$sample)])
+  stop("Duplicate constructed sample IDs in samplesheet: ", paste(dup, collapse = ", "))
+}
+
+## Read in meta sheet:
+# check for duplicated samples in meta sheet: 
 meta <- read_tsv(snakemake@input[['meta']]) 
-if(!"Sample_Name" %in% colnames(samplesheet))
+if(!"Sample_Name" %in% colnames(meta))
 stop("Error: missing column Sample_Name in the meta sheet")
+
+if (anyDuplicated(meta$sample)) {
+  dup <- unique(meta$sample[duplicated(meta$sample)])
+  stop("Duplicate sample IDs in merged metadata: ", paste(dup, collapse = ", "))
+}
 
 meta <- meta %>%
     dplyr::left_join(samplesheet, by="Sample_Name") %>%
     tibble::column_to_rownames("sample")
 
-## create summarized experiment
+## Create summarized experiment
 if(setequal(rownames(meta), colnames(betas))) {         
   
   se <- SummarizedExperiment(assays = list(betas = betas),
@@ -35,33 +52,34 @@ if(setequal(rownames(meta), colnames(betas))) {
                              colData = meta[common_samples, ])
   
 } else {
-  message("Can not create summerized experiment, check meta and sample sheet.")
+  stop ("Can not create SummarizedExperiment: no overlapping sample IDs between meta and beta matrix.")
 }
 
-# get probe locations from manifest
+## Get probe locations from manifest
 rowdat <- sesameData_getManifestGRanges(snakemake@params[['manifest_id']])
 stopifnot(sum(is.na(start(rowdat))) == 0)
 stopifnot(sum(is.na(seqnames(rowdat))) == 0)
 
-# check that all the manifest probes are in experiment probes
-stopifnot(all(names(rowdat) %in% rownames(se)))
+common_probes <- intersect(rownames(se), names(rowdat))
+message(length(common_probes), " probes out of ", nrow(se), " have matches in the array manifest.")
 
-# print out how many of the experiment probes have a match in the manifest
-message(sum(rownames(se) %in% names(rowdat)), " probes out of ", nrow(se), " have matches in the array manifest.")
+if (length(common_probes) == 0) {
+  stop("No overlapping probes between SummarizedExperiment and manifest.")
+}
 
-# subset for probes with manifest match
-se <- se[names(rowdat), ]
-rowRanges(se) <- rowdat
+se <- se[common_probes, ]
+rowRanges(se) <- rowdat[common_probes]
 
+# save the SummarizedExperiment object:
 saveRDS(se, snakemake@output[[1]])
 
 
-### generate PCA plot
+# ================= Generate PCA plot =================
 plot_pca_from_methylation_array <- function(se = se, group = "group") {
-  noNA_rows <- rowSums(is.na(assay(se))) == 0
+  noNA_rows <- rowSums(is.na(assay(se, "betas"))) == 0
   noNA_data <- se[noNA_rows, ]
 
-  pca <- prcomp(t(assay(noNA_data)))
+  pca <- prcomp(t(assay(noNA_data, "betas")))
   pr_comps <- data.frame(pca$x)
   pr_comps$combo <- rownames(pr_comps)
   pr_comps <- pr_comps %>% left_join(colData(se) %>% as.data.frame() %>% rownames_to_column("combo"))

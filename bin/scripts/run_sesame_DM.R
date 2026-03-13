@@ -77,7 +77,7 @@ n_DMR_seg <- merged |>
 
 #--- Print some basic summary --- 
 message("Analysis Summary for DMP:")
-message("Note - p-values in DMP is not adjusted for mulitple testing.")
+message("Note - p-values in DMP is not adjusted for multiple testing.")
 
 message(paste0("  - Total CpGs analyzed: ", nrow(se)))
 message(paste0("  - Significant DMPs (p < ", PVAL_THRESHOLD, "): ", 
@@ -98,7 +98,7 @@ message(paste0(
 message("----------------------------------------------------")
 
 message("Analysis Summary for DMR:")
-message("Note - p-values in DMR is adjusted for mulitple testing.")
+message("Note - p-values in DMR is adjusted for multiple testing.")
 message(paste0("  - Significant DMRs identified: ", n_DMR_seg))
 
 # ===== Save Results =====
@@ -125,7 +125,7 @@ plot_volcano_DMP_greater_than_2levels <- function(df,
   colnames(df) <- str_split_fixed(colnames(df), "_", 2)[, 1]
   
   ## Categorize by significance
-  df <- df %>% 
+  df <- df |>
     mutate(
       pval_sig = Pval < pval_thresh,
       eff_sig  = abs(Est) > eff_thresh,
@@ -144,8 +144,8 @@ plot_volcano_DMP_greater_than_2levels <- function(df,
     )
   
   ## Count categories for legend
-  color_counts <- df %>% 
-    group_by(color) %>% 
+  color_counts <- df |>
+    group_by(color) |>
     summarize(n = n(), .groups = 'drop')
   
   message("Volcano plot summary for ", name, ":")
@@ -186,7 +186,7 @@ message("\nGenerating volcano plot...")
 dir.create("analysis/plots/", showWarnings = FALSE)
 
 group_comparison <- paste0(group1, " vs ", group2)
-plot_data <- test_result %>% 
+plot_data <- test_result |>
   dplyr::select(matches("^Est_group|^Pval_group"))
 
 if (nrow(plot_data) > 0) {
@@ -208,3 +208,44 @@ if (nrow(plot_data) > 0) {
 end_time <- Sys.time()
 message("Finished sesame DM analysis at ", format(end_time, "%Y-%m-%d %H:%M:%S"))
 message("Total runtime: ", round(difftime(end_time, start_time, units = "mins"), 2), " minutes")
+
+
+# ===== Output DMP and DMR results =====
+# -- DMP results first:
+dir.create("analysis/results/", showWarnings = FALSE, recursive = TRUE)
+
+dmp_output_file <- paste0("analysis/results/dmp_", group1, "_vs_", group2, ".tsv")
+
+message(paste0("output DMP results to ", dmp_output_file))
+message("Note - p-values in DMP is not adjusted for mulitple testing.")
+
+message(paste0(
+  "  - DMPs with effect size filter is set at ", EFF_THRESHOLD, ";",
+  " and p-value filter is set at ", PVAL_THRESHOLD
+))
+
+test_result |>
+  dplyr::filter(
+    (!!sym(unadjusted_p_col)) < PVAL_THRESHOLD,
+     abs(!!sym(eff_col)) > EFF_THRESHOLD
+     ) |>
+  write_tsv(dmp_output_file)
+
+# -- DMR results next:
+dmr_output_file <- paste0("analysis/results/dmr_", group1, "_vs_", group2, ".tsv")
+
+message(paste0("output DMR results to ", dmr_output_file))
+message("Note - p-values in DMR is adjusted for multiple testing.")
+
+message(paste0(
+  "  - DMRs with effect size filter is set at ", EFF_THRESHOLD, ";",
+  " and adjusted p-value filter is set at ", PVAL_THRESHOLD
+))
+
+merged |>
+  dplyr::filter(
+    !is.na(Seg_Pval_adj), 
+    Seg_Pval_adj < PVAL_THRESHOLD, 
+    abs(Seg_Est) > EFF_THRESHOLD
+    ) |>
+  write_tsv(dmr_output_file)
