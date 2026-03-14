@@ -16,7 +16,13 @@ Example data from [GEO GSE198222](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi
 
 To run the workflow on your own data:
 
-### 1. Add the sample sheet
+### 1. Copy idat raw files
+
+Copy raw idat files from the array into idat_files directory. 
+
+---
+
+### 2. Add the sample sheet
 
 Place `SampleSheet.csv` in `samples/`.  
 Count the number of rows before the `Sample_Name` header — this value will be used in the config file.
