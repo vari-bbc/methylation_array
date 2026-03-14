@@ -29,7 +29,7 @@ Count the number of rows before the `Sample_Name` header — this value will be 
 
 ---
 
-### 2. Edit `samples/meta.tsv`
+### 3. Edit `samples/meta.tsv`
 
 This file links IDAT files to samples.
 
@@ -42,7 +42,7 @@ For multi-factor experiments (e.g. genotype × diet), combine factors into a sin
 
 ---
 
-### 3. Edit `samples/comparisons.tsv`
+### 4. Edit `samples/comparisons.tsv`
 
 Define comparisons for differential methylation.
 
@@ -53,7 +53,7 @@ The analysis computes **group1 − group2**, so positive values indicate higher 
 
 ---
 
-### 4. Edit `bin/config.yaml`
+### 5. Edit `bin/config.yaml`
 
 Key parameters:
 
